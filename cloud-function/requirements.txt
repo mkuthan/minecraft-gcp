@@ -1,0 +1,4 @@
+google-api-python-client==1.8.0
+google-cloud-secret-manager==0.2.0
+flask==1.0.2
+mcrcon==0.6.0
