@@ -3,7 +3,7 @@
 Minecraft Server automation on GCP, for my son and his friends.
 
 Features:
-* Secured server status/start/stop pages (by [Cloud Functions](https://cloud.google.com/functions/docs))
+* Secured server status/start/stop pages (served by [Cloud Functions](https://cloud.google.com/functions/docs))
 * Automated server shutdown if there is no active players (scheduled by [Cloud Scheduler](https://cloud.google.com/scheduler/docs))
 * Minecraft [RCON](https://wiki.vg/RCON) password secured in [Google Secret Manager](https://cloud.google.com/secret-manager/docs)
 * Minecrart world synchronized to/from [Google Storage](https://cloud.google.com/storage/docs)
