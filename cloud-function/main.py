@@ -9,6 +9,7 @@ from google.cloud import secretmanager
 PROJECT = "minecraft-272917"
 ZONE = "europe-west1-b"
 SERVER_NAME = "minecraft-server-2"
+API_SECRET_KEY = "api"
 RCON_SECRET_KEY = "rcon"
 
 
@@ -93,6 +94,9 @@ class ComputeInstance(object):
 
 
 def server_status(request):
+    if not _is_authenticated(request):
+        return _forbidden()
+
     compute_client = ComputeClient(PROJECT, ZONE)
     instance = compute_client.find_instance(SERVER_NAME)
     if instance.is_running():
@@ -105,6 +109,9 @@ def server_status(request):
 
 
 def start_server(request):
+    if not _is_authenticated(request):
+        return _forbidden()
+
     compute_client = ComputeClient(PROJECT, ZONE)
     instance = compute_client.find_instance(SERVER_NAME)
     if instance.is_terminated():
@@ -118,6 +125,9 @@ def start_server(request):
 
 
 def stop_server(request):
+    if not _is_authenticated(request):
+        return _forbidden()
+
     compute_client = ComputeClient(PROJECT, ZONE)
     instance = compute_client.find_instance(SERVER_NAME)
     if instance.is_running():
@@ -141,6 +151,19 @@ def stop_server_handler(event, context):
             compute_client.stop_instance(instance)
         else:
             print("Instance {} is used by {} player(s), skip stopping".format(instance.get_name(), number_of_players))
+
+
+def _is_authenticated(request):
+    api_key = request.args.get('api_key')
+    if api_key is None:
+        return False
+    else:
+        secret_client = SecretClient(PROJECT)
+        return api_key == secret_client.get_secret(API_SECRET_KEY)
+
+
+def _forbidden():
+    return 'forbidden', 403
 
 
 def _render_server_status(instance, message):
@@ -180,4 +203,8 @@ if __name__ == "__main__":
     # compute_client = ComputeClient(PROJECT, ZONE)
     # compute_instance = compute_client.find_instance(SERVER_NAME)
     # print(compute_instance.get_status())
+
+    # secret_client = SecretClient(PROJECT)
+    # print(secret_client.get_secret(API_SECRET_KEY))
+
     pass

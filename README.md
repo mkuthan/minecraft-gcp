@@ -1,17 +1,33 @@
 # minecraft-gcp
 
-Minecraft Server automation on GCP
+Minecraft Server automation on GCP, for my son and his friends.
 
 Features:
-* Server status/start/stop pages (served by [Cloud Functions](https://cloud.google.com/functions/docs))
+* Secured server status/start/stop pages (by [Cloud Functions](https://cloud.google.com/functions/docs))
 * Automated server shutdown if there is no active players (scheduled by [Cloud Scheduler](https://cloud.google.com/scheduler/docs))
 * Minecraft [RCON](https://wiki.vg/RCON) password secured in [Google Secret Manager](https://cloud.google.com/secret-manager/docs)
 * Minecrart world synchronized to/from [Google Storage](https://cloud.google.com/storage/docs)
 
 TODO list:
-* Docker image instead of startup-script / shutdown-script
-* DNS
 * Compute instance cost reduction
+* OAuth [authentication](https://cloud.google.com/functions/docs/securing/authenticating)
+* Docker image with Minecraft Server
+* DNS
+
+## Usage
+
+Server status page.
+
+[https://your-project.cloudfunctions.net/server_status?api_key=super_secret_key](https://your-project.cloudfunctions.net/server_status?api_key=super_secret_key)
+
+Start server.
+
+[https://your-project.cloudfunctions.net/start_server?api_key=super_secret_key](https://your-project.cloudfunctions.net/start_server?api_key=super_secret_key)
+
+Stop server.
+
+[https://your-project.cloudfunctions.net/stop_server?api_key=super_secret_key](https://your-project.cloudfunctions.net/stop_server?api_key=super_secret_key)
+
 
 ## Local environment
 
@@ -33,9 +49,41 @@ Install packages (see [pre-installed packages](https://cloud.google.com/function
 pip install -r cloud-function/requirements.txt
 ```
 
+## Google Cloud
+
+Update components.
+
+```shell script
+gcloud components update
+```
+
 ## Secret manager
 
-TODO
+Create secret for RCON.
+
+```shell script
+gcloud secrets create "rcon" --replication-policy="automatic"
+```
+
+Add secret version.
+
+```shell script
+echo -n "this is my super rcon secret" | \
+    gcloud secrets versions add "rcon" --data-file=-
+```
+
+Create secret for cloud functions api key.
+
+```shell script
+gcloud secrets create "api" --replication-policy="automatic"
+```
+
+Add secret version.
+
+```shell script
+echo -n "this is my super api secret" | \
+    gcloud secrets versions add "api" --data-file=-
+```
 
 ## Cloud scheduler
 
@@ -161,4 +209,18 @@ gcloud functions deploy stop_server_handler \
   --region=europe-west1 \
   --stage-bucket=minecraft-272917-cloud-functions \
   --source=./cloud-function --runtime=python37 --trigger-topic ten-minutes-jobs
+```
+
+Disable built-in authentication for HTTP cloud functions.
+
+```shell script
+gcloud alpha functions add-iam-policy-binding server_status --region=europe-west1 --member=allUsers --role=roles/cloudfunctions.invoker
+```
+
+```shell script
+gcloud alpha functions add-iam-policy-binding stop_server --region=europe-west1 --member=allUsers --role=roles/cloudfunctions.invoker
+```
+
+```shell script
+gcloud alpha functions add-iam-policy-binding start_server --region=europe-west1 --member=allUsers --role=roles/cloudfunctions.invoker
 ```
