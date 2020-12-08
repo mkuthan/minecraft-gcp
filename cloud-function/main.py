@@ -20,7 +20,7 @@ class SecretClient(object):
 
     def get_secret(self, key):
         secret_version = "projects/{0}/secrets/{1}/versions/latest".format(self.project, key)
-        secret = self.client.access_secret_version(secret_version)
+        secret = self.client.access_secret_version(request={"name": secret_version})
         return secret.payload.data.decode('UTF-8')
 
 
@@ -203,7 +203,7 @@ if __name__ == "__main__":
     # compute_client = ComputeClient(PROJECT, ZONE)
     # compute_instance = compute_client.find_instance(SERVER_NAME)
     # print(compute_instance.get_status())
-
+    #
     # secret_client = SecretClient(PROJECT)
     # print(secret_client.get_secret(API_SECRET_KEY))
 

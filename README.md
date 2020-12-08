@@ -178,7 +178,7 @@ gcloud functions deploy server_status \
   --timeout=180s --max-instances=1 \
   --region=europe-west1 \
   --stage-bucket=minecraft-272917-cloud-functions \
-  --source=./cloud-function --runtime=python37 --trigger-http 
+  --source=./cloud-function --runtime=python38 --trigger-http 
 ```
 
 Start server page.
@@ -188,7 +188,7 @@ gcloud functions deploy start_server \
   --timeout=300s --max-instances=1 \
   --region=europe-west1 \
   --stage-bucket=minecraft-272917-cloud-functions \
-  --source=./cloud-function --runtime=python37 --trigger-http
+  --source=./cloud-function --runtime=python38 --trigger-http
 ```
 
 Stop server page.
@@ -198,7 +198,7 @@ gcloud functions deploy stop_server \
   --timeout=300s --max-instances=1 \
   --region=europe-west1 \
   --stage-bucket=minecraft-272917-cloud-functions \
-  --source=./cloud-function --runtime=python37 --trigger-http
+  --source=./cloud-function --runtime=python38 --trigger-http
 ```
 
 Automated server stopping handler.
@@ -208,7 +208,7 @@ gcloud functions deploy stop_server_handler \
   --timeout=300s --max-instances=1 \
   --region=europe-west1 \
   --stage-bucket=minecraft-272917-cloud-functions \
-  --source=./cloud-function --runtime=python37 --trigger-topic ten-minutes-jobs
+  --source=./cloud-function --runtime=python38 --trigger-topic ten-minutes-jobs
 ```
 
 Disable built-in authentication for HTTP cloud functions.
