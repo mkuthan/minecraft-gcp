@@ -186,7 +186,7 @@ def _minecraft_number_of_players(instance):
     if list is None:
         return 0
     else:
-        number_of_players = re.findall("There are (\d+) of a max \d+ players online", list)[0]
+        number_of_players = re.findall("There are (\d+) of a max of \d+ players online", list)[0]
         return int(number_of_players)
 
 
@@ -203,7 +203,8 @@ if __name__ == "__main__":
     # compute_client = ComputeClient(PROJECT, ZONE)
     # compute_instance = compute_client.find_instance(SERVER_NAME)
     # print(compute_instance.get_status())
-    #
+    # print(_minecraft_number_of_players(compute_instance))
+
     # secret_client = SecretClient(PROJECT)
     # print(secret_client.get_secret(API_SECRET_KEY))
 
