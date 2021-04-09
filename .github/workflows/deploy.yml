@@ -42,10 +42,7 @@ jobs:
           region: europe-central2
           max_instances: 1
           timeout: 120
-          env_vars:
-            - GCP_PROJECT_ID=${{ steps.terraform.outputs.project }}
-            - GCP_ZONE=${{ steps.terraform.outputs.zone }}
-            - SERVER_NAME=${{ steps.terraform.outputs.server_name }}
+          env_vars: GCP_PROJECT_ID=${{ steps.terraform.outputs.project }},GCP_ZONE=${{ steps.terraform.outputs.zone }},SERVER_NAME=${{ steps.terraform.outputs.server_name }}
 
 #      - name: Smoke test
 #        run: curl "${{ steps.deploy_status.outputs.url }}"
