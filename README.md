@@ -33,29 +33,76 @@ Stop server.
 
 Use the `venv` command to create a virtual copy of the entire Python installation. 
 
-```shell script
+```shell
 python -m venv venv
 ```
 
 Set your shell to use the `venv` paths for Python by activating the virtual environment.
 
-```shell script
+```shell
 source venv/bin/activate
 ```
 
 Install packages (see [pre-installed packages](https://cloud.google.com/functions/docs/writing/specifying-dependencies-python) for recommended versions).
 
-```shell script
-pip install -r cloud-function/requirements.txt
+```shell
+pip install -r requirements.txt
 ```
 
 ## Google Cloud
 
 Update components.
 
-```shell script
+```shell
 gcloud components update
 ```
+
+Configure default projects.
+
+```shell
+gcloud config set project minecraft-272917
+```
+
+Create service account for Terraform.
+
+```shell
+gcloud iam service-accounts create terraform
+```
+
+Assign mandatory roles for created service account.
+
+```shell
+gcloud projects add-iam-policy-binding minecraft-272917 \
+  --member="serviceAccount:terraform@minecraft-272917.iam.gserviceaccount.com" \
+  --role="roles/storage.admin"
+gcloud projects add-iam-policy-binding minecraft-272917 \
+  --member="serviceAccount:terraform@minecraft-272917.iam.gserviceaccount.com" \
+  --role="roles/cloudfunctions.admin"
+```
+
+Generate service account key.
+
+```shell
+gcloud iam service-accounts keys create minecraft-terraform.json \
+  --iam-account=terraform@minecraft-272917.iam.gserviceaccount.com
+```
+
+Copy downloaded key into clipboard and set GitHub secret GCP_SA_KEY, paste the key from the clipboard.
+
+```shell
+pbcopy < minecraft-terraform.json
+```
+
+Remove the key.
+
+```shell
+rm minecraft-terraform.json
+```
+
+## Github
+
+Set up GitHub secret GCP_PROJECT_ID.
+
 
 ## Secret manager
 
@@ -85,83 +132,7 @@ echo -n "this is my super api secret" | \
     gcloud secrets versions add "api" --data-file=-
 ```
 
-## Cloud scheduler
-
-Create an App Engine app within the current Google Cloud Project.
-
-```shell script
-gcloud app create --region=europe-west
-```
-
-Create PubSub topic for scheduled events.
-
-```shell script
-gcloud pubsub topics create ten-minutes-jobs
-```
-
-Schedule events published to PubSub topic every ten minutes.
-
-```shell script
-gcloud scheduler jobs create pubsub ten-minutes-jobs \
-  --schedule "*/10 * * * *" --topic ten-minutes-jobs --message-body " "
-```
-
-Cron job could be paused and resumed.
-
-```shell script
-gcloud scheduler jobs pause ten-minutes-jobs
-```
-
-```shell script
-gcloud scheduler jobs resume ten-minutes-jobs
-```
-
-## Google storage
-
-TODO: setup bucket and configure minecraft distro
-
-## Compute instance
-
-TODO:
-https://cloud.google.com/solutions/gaming/minecraft-server
-
-Startup script.
-
-```shell script
-#! /bin/bash
-
-# install java & screen
-apt-get update && apt-get install -y default-jre-headless screen
-
-# install minecraft from GS
-mkdir -p /minecraft
-
-gsutil -m rsync -x ".*\.log\.gz$" -r gs://minecraft-272917 /minecraft
-
-# start minecraft
-cd /minecraft
-screen -d -m -S mcs java -Xms1G -Xmx3G -d64 -jar server.jar nogui
-```
-
-Shutdown script.
-
-```shell script
-#! /bin/bash
-
-# stop minecraft 
-screen -r mcs -X stuff '/stop\n'
-
-# save minecraft installation to GS
-gsutil -m rsync -x ".*\.log\.gz$" -r /minecraft gs://minecraft-272917
-```
-
 ## Cloud functions
-
-Create stage bucket for cloud functions.
-
-```shell script
-gsutil mb -c regional -l europe-west1 gs://minecraft-272917-cloud-functions
-```
 
 Add `secretmanager.secretAccessor` role to service account.
 

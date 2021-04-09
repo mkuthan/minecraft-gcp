@@ -1,3 +1,4 @@
+import os
 import re
 import time
 
@@ -6,11 +7,15 @@ import mcrcon
 from flask import render_template
 from google.cloud import secretmanager
 
-PROJECT = "minecraft-272917"
-ZONE = "europe-west1-b"
-SERVER_NAME = "minecraft-server-2"
+# PROJECT = "minecraft-272917"
+# ZONE = "europe-west1-b"
+# SERVER_NAME = "minecraft-server-2"
 API_SECRET_KEY = "api"
 RCON_SECRET_KEY = "rcon"
+
+project = os.environ['GCP_PROJECT_ID']
+zone = os.environ['GCP_ZONE']
+server_name = os.environ['SERVER_NAME']
 
 
 class SecretClient(object):
@@ -97,8 +102,8 @@ def server_status(request):
     if not _is_authenticated(request):
         return _forbidden()
 
-    compute_client = ComputeClient(PROJECT, ZONE)
-    instance = compute_client.find_instance(SERVER_NAME)
+    compute_client = ComputeClient(project, zone)
+    instance = compute_client.find_instance(server_name)
     if instance.is_running():
         message = "started"
     elif instance.is_terminated():
@@ -112,8 +117,8 @@ def start_server(request):
     if not _is_authenticated(request):
         return _forbidden()
 
-    compute_client = ComputeClient(PROJECT, ZONE)
-    instance = compute_client.find_instance(SERVER_NAME)
+    compute_client = ComputeClient(project, zone)
+    instance = compute_client.find_instance(server_name)
     if instance.is_terminated():
         instance = compute_client.start_instance(instance)
 
@@ -128,8 +133,8 @@ def stop_server(request):
     if not _is_authenticated(request):
         return _forbidden()
 
-    compute_client = ComputeClient(PROJECT, ZONE)
-    instance = compute_client.find_instance(SERVER_NAME)
+    compute_client = ComputeClient(project, zone)
+    instance = compute_client.find_instance(server_name)
     if instance.is_running():
         instance = compute_client.stop_instance(instance)
 
@@ -142,8 +147,8 @@ def stop_server(request):
 
 
 def stop_server_handler(event, context):
-    compute_client = ComputeClient(PROJECT, ZONE)
-    instance = compute_client.find_instance(SERVER_NAME)
+    compute_client = ComputeClient(project, zone)
+    instance = compute_client.find_instance(server_name)
     if instance.is_running():
         number_of_players = _minecraft_number_of_players(instance)
         if number_of_players == 0:
@@ -158,7 +163,7 @@ def _is_authenticated(request):
     if api_key is None:
         return False
     else:
-        secret_client = SecretClient(PROJECT)
+        secret_client = SecretClient(project)
         return api_key == secret_client.get_secret(API_SECRET_KEY)
 
 
@@ -192,7 +197,7 @@ def _minecraft_number_of_players(instance):
 
 def _minecraft_command(instance, command):
     try:
-        secret_client = SecretClient(PROJECT)
+        secret_client = SecretClient(project)
         with mcrcon.MCRcon(instance.get_ip(), secret_client.get_secret(RCON_SECRET_KEY)) as client:
             return client.command(command)
     except ConnectionRefusedError:

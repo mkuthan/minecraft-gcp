@@ -1,0 +1,51 @@
+name: "Deploy"
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v0.2.1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v1.3.2
+
+      - name: Terraform init
+        run: terraform init -input=false
+        working-directory: terraform
+
+      - name: Terraform apply
+        id: terraform
+        run: terraform apply -input=false -auto-approve
+        working-directory: terraform
+
+      - name: Deploy cloud function
+        id: deploy_status
+        uses: google-github-actions/deploy-cloud-functions@v0.4.0
+        with:
+          name: server-status
+          entry_point: server_status
+          source_dir: minecraft
+          runtime: python39
+          region: europe-central2
+          max_instances: 1
+          timeout: 120
+          env_vars:
+            - GCP_PROJECT_ID=${{ steps.terraform.outputs.project }}
+            - GCP_ZONE=${{ steps.terraform.outputs.zone }}
+            - SERVER_NAME=${{ steps.terraform.outputs.server_name }}
+
+#      - name: Smoke test
+#        run: curl "${{ steps.deploy_status.outputs.url }}"
