@@ -2,7 +2,7 @@ project = "minecraft-272917"
 region = "europe-central2"
 zone = "europe-central2-a"
 bucket_location = "eu"
-app_engine_location = "europe-west"
+app_engine_location = "europe-west1"
 
 disk_size_gb = "10"
 

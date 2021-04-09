@@ -123,6 +123,7 @@ resource "google_pubsub_topic" "topic_jobs" {
 resource "google_cloud_scheduler_job" "scheduler_job" {
   name = "ten-minutes-jobs"
   schedule = "*/10 * * * *"
+  region = var.app_engine_location
 
   pubsub_target {
     topic_name = google_pubsub_topic.topic_jobs.id
