@@ -42,7 +42,7 @@ jobs:
           entry_point: server_status
           source_dir: minecraft
           runtime: python39
-          region: europe-central2
+          region: europe-west1
           max_instances: 1
           timeout: 120
           env_vars: GCP_PROJECT_ID=${{ steps.terraform.outputs.project }},GCP_ZONE=${{ steps.terraform.outputs.zone }},SERVER_NAME=${{ steps.terraform.outputs.server_name }}
