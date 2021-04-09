@@ -8,8 +8,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      TF_LOG: DEBUG
+#    env:
+#      TF_LOG: DEBUG
 
     steps:
       - name: Checkout

@@ -18,6 +18,10 @@ variable "app_engine_location" {
   type = string
 }
 
+variable "cloud_scheduler_region" {
+  type = string
+}
+
 variable "disk_size_gb" {
   type = string
 }
