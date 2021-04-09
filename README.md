@@ -46,7 +46,7 @@ source venv/bin/activate
 Install packages (see [pre-installed packages](https://cloud.google.com/functions/docs/writing/specifying-dependencies-python) for recommended versions).
 
 ```shell
-pip install -r requirements.txt
+pip install -r minecraft/requirements.txt
 ```
 
 ## Google Cloud
@@ -63,10 +63,11 @@ Configure default projects.
 gcloud config set project minecraft-272917
 ```
 
-Enable App Engine Admin API.
+Enable required APIs.
 
 ```shell
 gcloud services enable appengine.googleapis.com
+gcloud services enable iam.googleapis.com
 ```
 
 Create service account for Terraform.
@@ -96,6 +97,9 @@ gcloud projects add-iam-policy-binding minecraft-272917 \
 gcloud projects add-iam-policy-binding minecraft-272917 \
   --member="serviceAccount:terraform@minecraft-272917.iam.gserviceaccount.com" \
   --role="roles/appengine.appAdmin"
+gcloud projects add-iam-policy-binding minecraft-272917 \
+  --member="serviceAccount:terraform@minecraft-272917.iam.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountAdmin"
 ```
 
 Service account needs to be a member of the Compute Engine default service account. 
