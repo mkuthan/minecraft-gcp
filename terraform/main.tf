@@ -45,6 +45,10 @@ resource "random_string" "id" {
 // Minecraft Server
 //
 
+resource "google_service_account" "service_account" {
+  account_id = "minecraft"
+}
+
 resource "google_storage_bucket" "bucket" {
   name = "minecraft-${random_string.id.result}"
   location = var.bucket_location
@@ -90,6 +94,8 @@ resource "google_compute_instance" "server" {
   machine_type = "e2-medium"
   tags = ["minecraft"]
 
+  allow_stopping_for_update = true
+
   metadata = {
     startup-script = local.startup_script
     shutdown-script = local.shutdown_script
@@ -105,6 +111,11 @@ resource "google_compute_instance" "server" {
     access_config {
       nat_ip = google_compute_address.address.address
     }
+  }
+
+  service_account {
+    email = google_service_account.service_account.email
+    scopes = ["cloud-platform"]
   }
 }
 

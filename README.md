@@ -95,7 +95,15 @@ gcloud projects add-iam-policy-binding minecraft-272917 \
   --role="roles/cloudscheduler.admin"
 gcloud projects add-iam-policy-binding minecraft-272917 \
   --member="serviceAccount:terraform@minecraft-272917.iam.gserviceaccount.com" \
-  --role="roles/appengine.appAdmin"  
+  --role="roles/appengine.appAdmin"
+```
+
+Service account needs to be a member of the Compute Engine default service account. 
+
+```shell
+gcloud iam service-accounts add-iam-policy-binding minecraft-272917@appspot.gserviceaccount.com \
+  --member="serviceAccount:terraform@minecraft-272917.iam.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountUser"
 ```
 
 Generate service account key.
