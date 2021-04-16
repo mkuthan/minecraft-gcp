@@ -50,6 +50,7 @@ jobs:
       - name: Allow unauthenticated access
         run: |
           gcloud functions add-iam-policy-binding server-status \
+            --region=europe-west1 \
             --member="allUsers" \
             --role="roles/cloudfunctions.invoker"
 

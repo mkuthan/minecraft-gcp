@@ -28,6 +28,8 @@ locals {
   startup_script = templatefile("${path.module}/templates/startup.sh.tpl", {
     bucket = google_storage_bucket.bucket.url
     minecraft_version = var.minecraft_version
+    minecraft_port = var.minecraft_port
+    rcon_port = var.rcon_port
   })
 
   shutdown_script = templatefile("${path.module}/templates/shutdown.sh.tpl", {
@@ -78,14 +80,10 @@ resource "google_compute_firewall" "firewall" {
 
   allow {
     protocol = "tcp"
-    ports = ["25565"]
+    ports = [22, var.minecraft_port, var.rcon_port]
   }
   allow {
     protocol = "icmp"
-  }
-  allow {
-    protocol = "tcp"
-    ports = ["22"]
   }
 }
 

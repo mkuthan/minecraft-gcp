@@ -29,3 +29,13 @@ variable "disk_size_gb" {
 variable "minecraft_version" {
   type = string
 }
+
+variable "minecraft_port" {
+  type = number
+  default = 25565
+}
+
+variable "rcon_port" {
+  type = number
+  default = 28016
+}
